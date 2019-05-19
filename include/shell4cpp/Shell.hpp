@@ -1,14 +1,16 @@
 #ifndef _SHELL_H
 #define _SHELL_H
-#include <cstdarg>
-#include <fmt/format.h>
-#include <functional>
+
 #include <iostream>
+#include <string>
+#include <cstdarg>
+#include <functional>
 #include <map>
 #include <vector>
 
 #include <shell4cpp/Operation.hpp>
 #define _SHELL_PORT 50000
+
 namespace shell4cpp {
 class Shell {
 private:
@@ -63,7 +65,7 @@ public:
     }
     Operation *op = operations[ins[0]];
     if (op == nullptr) {
-      print(fmt::format("{}: operation not found\n", ins[0]));
+      println(std::string(ins[0]) + ": operation not found");
       return;
     }
     std::function<void(Operation, std::vector<std::string>)> func = op->fp;
@@ -71,21 +73,21 @@ public:
     try {
       func(*op, ins);
     } catch (std::bad_function_call bfc) {
-      print(fmt::format("{}: operation not found\n", ins[0]));
+      println(std::string(ins[0]) + ": operation not found");
     }
   }
 
-  void print(std::string message) { fmt::print(message); }
+  void print(std::string message) { std::cout << message; }
 
-  void println(std::string message) { print(message + "\n"); }
+  void println(std::string message) { std::cout << message << std::endl; }
 
   void start() {
     std::string in;
-    fmt::print(shellIcon);
+    print(shellIcon);
     while (std::getline(std::cin, in)) {
       std::vector<std::string> ins = split(in, " ", true);
       execute(ins);
-      fmt::print(shellIcon);
+      print(shellIcon);
     }
   }
 
